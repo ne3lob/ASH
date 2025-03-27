@@ -40,7 +40,6 @@
         transition: width 0.2s ease;
       }
 
-      /* Centered Loading Image */
       #custom-loading {
         position: absolute;
         top: 50%;
@@ -56,6 +55,7 @@
         transform-origin: center;
         max-width: 100%;
         height: auto;
+        cursor: pointer;
       }
 
       @keyframes fadeOut {
@@ -76,7 +76,7 @@
     </style>
   </head>
   <body>
-    <!-- 🚫 Block Mobile Devices -->
+    <!-- Block Mobile Devices -->
     <script>
       if (/Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent)) {
         document.write(`
@@ -109,7 +109,7 @@
             <p>Please open this page on a computer or laptop.</p>
           </div>
         `);
-        window.stop(); // Stop Unity loading
+        window.stop();
       }
     </script>
 
@@ -117,15 +117,16 @@
     <div id="unity-container">
       <canvas id="unity-canvas" tabindex="-1"></canvas>
 
-      <!-- Progress Bar -->
       <div id="unity-loading-bar">
         <div id="unity-progress-bar-full"></div>
       </div>
       <div id="unity-warning"></div>
 
-      <!-- Centered Scaled Loading Image -->
+      <!-- Clickable Loading Image -->
       <div id="custom-loading">
-        <img src="Loading.png" alt="Loading">
+        <a href="https://docs.google.com/document/d/1OZse4VOYPoeWcldPX_V2JF-y-Wv57xKNJhF3oJmITtk/edit?tab=t.0" target="_blank" rel="noopener noreferrer">
+          <img src="Loading.png" alt="Loading">
+        </a>
       </div>
     </div>
 
