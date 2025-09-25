@@ -80,25 +80,71 @@
       // JS_FileSystem_Sync() behavior, but in future Unity version, this will be
       // expected to change.
 
-      if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
-        // Mobile device style: fill the whole browser client area with the game canvas:
+      // Responsive canvas sizing
+      function resizeCanvas() {
+        var container = document.querySelector("#unity-container");
+        var canvas = document.querySelector("#unity-canvas");
+        var containerWidth = window.innerWidth;
+        var containerHeight = window.innerHeight;
+        
+        // Calculate aspect ratio (16:9 for Unity)
+        var targetAspectRatio = 16 / 9;
+        var currentAspectRatio = containerWidth / containerHeight;
+        
+        var canvasWidth, canvasHeight;
+        
+        if (currentAspectRatio > targetAspectRatio) {
+          // Screen is wider than target aspect ratio - fit to height
+          canvasHeight = containerHeight;
+          canvasWidth = canvasHeight * targetAspectRatio;
+        } else {
+          // Screen is taller than target aspect ratio - fit to width
+          canvasWidth = containerWidth;
+          canvasHeight = canvasWidth / targetAspectRatio;
+        }
+        
+        // Set canvas size with proper scaling
+        canvas.style.width = canvasWidth + "px";
+        canvas.style.height = canvasHeight + "px";
+        canvas.style.maxWidth = "100vw";
+        canvas.style.maxHeight = "100vh";
+        
+        // Center the canvas
+        canvas.style.position = "absolute";
+        canvas.style.left = "50%";
+        canvas.style.top = "50%";
+        canvas.style.transform = "translate(-50%, -50%)";
+        canvas.style.objectFit = "contain";
+        
+        console.log("Canvas resized to:", canvasWidth + "x" + canvasHeight);
+        console.log("Container size:", containerWidth + "x" + containerHeight);
+      }
 
+      if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
+        // Mobile device style: responsive scaling
         var meta = document.createElement('meta');
         meta.name = 'viewport';
         meta.content = 'width=device-width, height=device-height, initial-scale=1.0, user-scalable=no, shrink-to-fit=yes';
         document.getElementsByTagName('head')[0].appendChild(meta);
         document.querySelector("#unity-container").className = "unity-mobile";
         canvas.className = "unity-mobile";
-
-        // To lower canvas resolution on mobile devices to gain some
-        // performance, uncomment the following line:
-        // config.devicePixelRatio = 1;
-
-
+        
+        // Mobile: use responsive scaling
+        resizeCanvas();
+        
+        // Listen for orientation changes
+        window.addEventListener('orientationchange', function() {
+          setTimeout(resizeCanvas, 200);
+        });
       } else {
-        // Desktop style: Render the game canvas in a window that can be maximized to fullscreen:
-        canvas.style.width = "1920px";
-        canvas.style.height = "1000px";
+        // Desktop: responsive sizing
+        resizeCanvas();
+        
+        // Listen for window resize
+        window.addEventListener('resize', resizeCanvas);
+        window.addEventListener('orientationchange', function() {
+          setTimeout(resizeCanvas, 100);
+        });
       }
 
       document.querySelector("#unity-loading-bar").style.display = "block";
