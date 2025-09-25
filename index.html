@@ -3,137 +3,34 @@
   <head>
     <meta charset="utf-8">
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <title>AŞ Ritual</title>
+    <title>Unity Web Player | FULL SCREEN</title>
     <link rel="shortcut icon" href="TemplateData/favicon.ico">
     <link rel="stylesheet" href="TemplateData/style.css">
-    <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1.0, user-scalable=no, shrink-to-fit=yes">
-    <style>
-      html, body {
-        margin: 0;
-        padding: 0;
-        height: 100%;
-        overflow: hidden;
-        background-color: #000;
-      }
-      #unity-container {
-        width: 100%;
-        height: 100%;
-        position: absolute;
-      }
-      #unity-canvas {
-        width: 100%;
-        height: 100%;
-        background: #000;
-      }
-      #unity-loading-bar {
-        width: 100%;
-        height: 4px;
-        background-color: #222;
-        position: absolute;
-        top: 0;
-        left: 0;
-      }
-      #unity-progress-bar-full {
-        height: 100%;
-        background-color: #fff;
-        width: 0%;
-        transition: width 0.2s ease;
-      }
-
-      #custom-loading {
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        z-index: 999;
-        text-align: center;
-        animation: fadeIn 0.3s ease-in-out;
-      }
-
-      #custom-loading img {
-        transform: scale(0.5);
-        transform-origin: center;
-        max-width: 100%;
-        height: auto;
-        cursor: pointer;
-      }
-
-      @keyframes fadeOut {
-        to {
-          opacity: 0;
-          visibility: hidden;
-        }
-      }
-
-      @keyframes fadeIn {
-        from {
-          opacity: 0;
-        }
-        to {
-          opacity: 1;
-        }
-      }
-    </style>
   </head>
-  <body>
-    <!-- Block Mobile Devices -->
-    <script>
-      if (/Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent)) {
-        document.write(`
-          <style>
-            body {
-              background-color: #1e1e1e;
-              color: #ffffff;
-              font-family: sans-serif;
-              display: flex;
-              align-items: center;
-              justify-content: center;
-              height: 100vh;
-              margin: 0;
-              text-align: center;
-              padding: 20px;
-              box-sizing: border-box;
-            }
-            .block-message {
-              max-width: 600px;
-              padding: 20px;
-              border: 2px solid #fff;
-              border-radius: 12px;
-              background-color: #2d2d2d;
-              box-shadow: 0 0 20px rgba(0,0,0,0.5);
-            }
-          </style>
-          <div class="block-message">
-            <h1>AŞ Ritual</h1>
-            <p><strong>AŞ Ritual is not available on mobile devices.</strong></p>
-            <p>Please open this page on a computer or laptop.</p>
-          </div>
-        `);
-        window.stop();
-      }
-    </script>
-
-    <!-- Unity Canvas & Loading Elements -->
-    <div id="unity-container">
-      <canvas id="unity-canvas" tabindex="-1"></canvas>
-
+  <body style="background-color: black;">
+    <div id="unity-container" class="unity-desktop">
+      <canvas id="unity-canvas" width=1920 height=720 tabindex="-1"></canvas>
       <div id="unity-loading-bar">
-        <div id="unity-progress-bar-full"></div>
+        <div id="unity-progress-bar-empty">
+          <div id="unity-progress-bar-full"></div>
+        </div>
+        <div id="unity-progress-text">Loading... 0%</div>
       </div>
-      <div id="unity-warning"></div>
-
-      <!-- Clickable Loading Image -->
-      <div id="custom-loading">
-        <a href="https://docs.google.com/document/d/1OZse4VOYPoeWcldPX_V2JF-y-Wv57xKNJhF3oJmITtk/edit?tab=t.0" target="_blank" rel="noopener noreferrer">
-          <img src="Loading.png" alt="Loading">
-        </a>
+      <div id="unity-warning"> </div>
+      <div id="unity-footer">
+        <div id="unity-fullscreen-button"></div>
+        <div id="unity-build-title">FULL SCREEN</div>
       </div>
     </div>
-
-    <!-- Unity Loader Script -->
     <script>
       var canvas = document.querySelector("#unity-canvas");
 
+      // Shows a temporary message banner/ribbon for a few seconds, or
+      // a permanent error message on top of the canvas if type=='error'.
+      // If type=='warning', a yellow highlight color is used.
+      // Modify or remove this function to customize the visually presented
+      // way that non-critical warnings and error messages are presented to the
+      // user.
       function unityShowBanner(msg, type) {
         var warningBanner = document.querySelector("#unity-warning");
         function updateBannerVisibility() {
@@ -145,7 +42,7 @@
         if (type == 'error') div.style = 'background: red; padding: 10px;';
         else {
           if (type == 'warning') div.style = 'background: yellow; padding: 10px;';
-          setTimeout(function () {
+          setTimeout(function() {
             warningBanner.removeChild(div);
             updateBannerVisibility();
           }, 5000);
@@ -156,31 +53,105 @@
       var buildUrl = "Build";
       var loaderUrl = buildUrl + "/Build.loader.js";
       var config = {
+        arguments: [],
         dataUrl: buildUrl + "/Build.data",
         frameworkUrl: buildUrl + "/Build.framework.js",
         codeUrl: buildUrl + "/Build.wasm",
         streamingAssetsUrl: "StreamingAssets",
         companyName: "ASH",
-        productName: "AŞ Ritual",
+        productName: "FULL SCREEN",
         productVersion: "0.1.0",
         showBanner: unityShowBanner,
-        devicePixelRatio: 1
       };
 
+      // By default, Unity keeps WebGL canvas render target size matched with
+      // the DOM size of the canvas element (scaled by window.devicePixelRatio)
+      // Set this to false if you want to decouple this synchronization from
+      // happening inside the engine, and you would instead like to size up
+      // the canvas DOM size and WebGL render target sizes yourself.
+      // config.matchWebGLToCanvasSize = false;
+
+      // If you would like all file writes inside Unity Application.persistentDataPath
+      // directory to automatically persist so that the contents are remembered when
+      // the user revisits the site the next time, uncomment the following line:
+      // config.autoSyncPersistentDataPath = true;
+      // This autosyncing is currently not the default behavior to avoid regressing
+      // existing user projects that might rely on the earlier manual
+      // JS_FileSystem_Sync() behavior, but in future Unity version, this will be
+      // expected to change.
+
+      if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
+        // Mobile device style: fill the whole browser client area with the game canvas:
+
+        var meta = document.createElement('meta');
+        meta.name = 'viewport';
+        meta.content = 'width=device-width, height=device-height, initial-scale=1.0, user-scalable=no, shrink-to-fit=yes';
+        document.getElementsByTagName('head')[0].appendChild(meta);
+        document.querySelector("#unity-container").className = "unity-mobile";
+        canvas.className = "unity-mobile";
+
+        // To lower canvas resolution on mobile devices to gain some
+        // performance, uncomment the following line:
+        // config.devicePixelRatio = 1;
+
+
+      } else {
+        // Desktop style: Render the game canvas in a window that can be maximized to fullscreen:
+        canvas.style.width = "1920px";
+        canvas.style.height = "1000px";
+      }
+
+      document.querySelector("#unity-loading-bar").style.display = "block";
+
+      console.log("Loading Unity from:", loaderUrl);
+      console.log("Build URL:", buildUrl);
+      
       var script = document.createElement("script");
       script.src = loaderUrl;
       script.onload = () => {
-        createUnityInstance(canvas, config, (progress) => {
-          document.querySelector("#unity-progress-bar-full").style.width = (progress * 100) + "%";
-        }).then((unityInstance) => {
-          document.querySelector("#unity-loading-bar").style.display = "none";
-          const loadingImage = document.getElementById("custom-loading");
-          loadingImage.style.animation = "fadeOut 0.3s ease-out forwards";
-        }).catch((message) => {
-          alert(message);
-        });
+        // Wait a bit to ensure the script is fully loaded
+        setTimeout(() => {
+          if (typeof createUnityInstance === 'undefined') {
+            console.error("createUnityInstance is not defined. Check if Unity build files are present.");
+            document.querySelector("#unity-progress-text").textContent = "Loading failed - Unity files missing";
+            return;
+          }
+          
+          createUnityInstance(canvas, config, (progress) => {
+            // Update progress bar width
+            document.querySelector("#unity-progress-bar-full").style.width = 100 * progress + "%";
+            
+            // Update progress text with percentage
+            var progressPercent = Math.round(progress * 100);
+            document.querySelector("#unity-progress-text").textContent = "Loading... " + progressPercent + "%";
+            
+            // Log progress for debugging
+            console.log("Loading progress: " + progressPercent + "%");
+                }).then((unityInstance) => {
+                  // Hide loading bar when complete
+                  document.querySelector("#unity-loading-bar").style.display = "none";
+                  console.log("Unity instance loaded successfully!");
+                  
+                  // Setup fullscreen button
+                  document.querySelector("#unity-fullscreen-button").onclick = () => {
+                    unityInstance.SetFullscreen(1);
+                  };
+
+                }).catch((message) => {
+                  console.error("Unity loading failed:", message);
+                  document.querySelector("#unity-progress-text").textContent = "Loading failed: " + message;
+                });
+        }, 100);
       };
+      
+      script.onerror = (e) => {
+        console.error("Failed to load Unity loader script from:", loaderUrl);
+        console.error("Error details:", e);
+        document.querySelector("#unity-progress-text").textContent = "Failed to load Unity files - Check console for details";
+      };
+
       document.body.appendChild(script);
+
     </script>
   </body>
 </html>
