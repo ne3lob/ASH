@@ -103,34 +103,52 @@
 
       document.querySelector("#unity-loading-bar").style.display = "block";
 
+      console.log("Loading Unity from:", loaderUrl);
+      console.log("Build URL:", buildUrl);
+      
       var script = document.createElement("script");
       script.src = loaderUrl;
       script.onload = () => {
-        createUnityInstance(canvas, config, (progress) => {
-          // Update progress bar width
-          document.querySelector("#unity-progress-bar-full").style.width = 100 * progress + "%";
+        // Wait a bit to ensure the script is fully loaded
+        setTimeout(() => {
+          if (typeof createUnityInstance === 'undefined') {
+            console.error("createUnityInstance is not defined. Check if Unity build files are present.");
+            document.querySelector("#unity-progress-text").textContent = "Loading failed - Unity files missing";
+            return;
+          }
           
-          // Update progress text with percentage
-          var progressPercent = Math.round(progress * 100);
-          document.querySelector("#unity-progress-text").textContent = "Loading... " + progressPercent + "%";
-          
-          // Log progress for debugging
-          console.log("Loading progress: " + progressPercent + "%");
-              }).then((unityInstance) => {
-                // Hide loading bar when complete
-                document.querySelector("#unity-loading-bar").style.display = "none";
-                console.log("Unity instance loaded successfully!");
-                
-                // Setup fullscreen button
-                document.querySelector("#unity-fullscreen-button").onclick = () => {
-                  unityInstance.SetFullscreen(1);
-                };
+          createUnityInstance(canvas, config, (progress) => {
+            // Update progress bar width
+            document.querySelector("#unity-progress-bar-full").style.width = 100 * progress + "%";
+            
+            // Update progress text with percentage
+            var progressPercent = Math.round(progress * 100);
+            document.querySelector("#unity-progress-text").textContent = "Loading... " + progressPercent + "%";
+            
+            // Log progress for debugging
+            console.log("Loading progress: " + progressPercent + "%");
+                }).then((unityInstance) => {
+                  // Hide loading bar when complete
+                  document.querySelector("#unity-loading-bar").style.display = "none";
+                  console.log("Unity instance loaded successfully!");
+                  
+                  // Setup fullscreen button
+                  document.querySelector("#unity-fullscreen-button").onclick = () => {
+                    unityInstance.SetFullscreen(1);
+                  };
 
-              }).catch((message) => {
-                console.error("Unity loading failed:", message);
-                alert("Loading failed: " + message);
-              });
-            };
+                }).catch((message) => {
+                  console.error("Unity loading failed:", message);
+                  document.querySelector("#unity-progress-text").textContent = "Loading failed: " + message;
+                });
+        }, 100);
+      };
+      
+      script.onerror = (e) => {
+        console.error("Failed to load Unity loader script from:", loaderUrl);
+        console.error("Error details:", e);
+        document.querySelector("#unity-progress-text").textContent = "Failed to load Unity files - Check console for details";
+      };
 
       document.body.appendChild(script);
 
