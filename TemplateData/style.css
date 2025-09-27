@@ -12,5 +12,5 @@ body { padding: 0; margin: 0; background-color: black; }
 .unity-mobile #unity-footer { display: none }
 #unity-logo-title-footer { float:left; width: 102px; height: 38px; background: url('unity-logo-title-footer.png') no-repeat center }
 #unity-build-title { float: right; margin-right: 10px; line-height: 38px; font-family: arial; font-size: 18px; color: #FFA500; }
-#unity-fullscreen-button { cursor:pointer; position: fixed; top: 10px; right: 10px; width: 38px; height: 38px; background: url('fullscreen-button.png') no-repeat center; filter: brightness(0) invert(1); z-index: 1000; }
+#unity-fullscreen-button { cursor:pointer; position: fixed; top: 10px; right: 10px; width: 60px; height: 60px; background: url('fullscreen-button.png') no-repeat center; background-size: contain; filter: brightness(0) invert(1); z-index: 1000; }
 #unity-warning { position: absolute; left: 50%; top: 5%; transform: translate(-50%); background: white; padding: 10px; display: none }
